@@ -1,0 +1,227 @@
+{
+  "testCases": [
+    {
+      "id": "simple-linear-1",
+      "description": "Simple linear equation with addition",
+      "input": "2x+4=10",
+      "expectedOutput": "\\begin{array}{rcrcr}\n2x + 4 & = & 10 & & \\\\\n & & -4 & & -4 \\\\\n\\hline\n2x & = & 6 & & \\\\\n÷2 & & & & ÷2 \\\\\n\\hline\nx & = & 3 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "2x + 4 = 10",
+          "operation": "subtract 4 from both sides",
+          "operationDisplay": "-4"
+        },
+        {
+          "equation": "2x = 6",
+          "operation": "divide both sides by 2",
+          "operationDisplay": "÷2"
+        },
+        {
+          "equation": "x = 3",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "simple-linear-2",
+      "description": "Simple linear equation with subtraction",
+      "input": "3x-7=8",
+      "expectedOutput": "\\begin{array}{rcrcr}\n3x - 7 & = & 8 & & \\\\\n & & +7 & & +7 \\\\\n\\hline\n3x & = & 15 & & \\\\\n÷3 & & & & ÷3 \\\\\n\\hline\nx & = & 5 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "3x - 7 = 8",
+          "operation": "add 7 to both sides",
+          "operationDisplay": "+7"
+        },
+        {
+          "equation": "3x = 15",
+          "operation": "divide both sides by 3",
+          "operationDisplay": "÷3"
+        },
+        {
+          "equation": "x = 5",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "distribution-1",
+      "description": "Equation with distribution",
+      "input": "3(x+2)=18",
+      "expectedOutput": "\\begin{array}{rcrcr}\n3(x + 2) & = & 18 & & \\\\\n3x + 6 & = & 18 & & \\\\\n & & -6 & & -6 \\\\\n\\hline\n3x & = & 12 & & \\\\\n÷3 & & & & ÷3 \\\\\n\\hline\nx & = & 4 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "3(x + 2) = 18",
+          "operation": "distribute 3",
+          "operationDisplay": "distribute"
+        },
+        {
+          "equation": "3x + 6 = 18",
+          "operation": "subtract 6 from both sides",
+          "operationDisplay": "-6"
+        },
+        {
+          "equation": "3x = 12",
+          "operation": "divide both sides by 3",
+          "operationDisplay": "÷3"
+        },
+        {
+          "equation": "x = 4",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "distribution-2",
+      "description": "Multi-step with distribution",
+      "input": "2(x-3)+4=10",
+      "expectedOutput": "\\begin{array}{rcrcr}\n2(x - 3) + 4 & = & 10 & & \\\\\n2x - 6 + 4 & = & 10 & & \\\\\n2x - 2 & = & 10 & & \\\\\n & & +2 & & +2 \\\\\n\\hline\n2x & = & 12 & & \\\\\n÷2 & & & & ÷2 \\\\\n\\hline\nx & = & 6 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "2(x - 3) + 4 = 10",
+          "operation": "distribute 2",
+          "operationDisplay": "distribute"
+        },
+        {
+          "equation": "2x - 6 + 4 = 10",
+          "operation": "simplify left side",
+          "operationDisplay": "simplify"
+        },
+        {
+          "equation": "2x - 2 = 10",
+          "operation": "add 2 to both sides",
+          "operationDisplay": "+2"
+        },
+        {
+          "equation": "2x = 12",
+          "operation": "divide both sides by 2",
+          "operationDisplay": "÷2"
+        },
+        {
+          "equation": "x = 6",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "negative-coefficient",
+      "description": "Equation with negative coefficient",
+      "input": "-2x+8=2",
+      "expectedOutput": "\\begin{array}{rcrcr}\n-2x + 8 & = & 2 & & \\\\\n & & -8 & & -8 \\\\\n\\hline\n-2x & = & -6 & & \\\\\n÷(-2) & & & & ÷(-2) \\\\\n\\hline\nx & = & 3 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "-2x + 8 = 2",
+          "operation": "subtract 8 from both sides",
+          "operationDisplay": "-8"
+        },
+        {
+          "equation": "-2x = -6",
+          "operation": "divide both sides by -2",
+          "operationDisplay": "÷(-2)"
+        },
+        {
+          "equation": "x = 3",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "fraction-coefficient",
+      "description": "Equation with fraction coefficient",
+      "input": "\\frac{x}{2}+3=7",
+      "expectedOutput": "\\begin{array}{rcrcr}\n\\frac{x}{2} + 3 & = & 7 & & \\\\\n & & -3 & & -3 \\\\\n\\hline\n\\frac{x}{2} & = & 4 & & \\\\\n×2 & & & & ×2 \\\\\n\\hline\nx & = & 8 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "\\frac{x}{2} + 3 = 7",
+          "operation": "subtract 3 from both sides",
+          "operationDisplay": "-3"
+        },
+        {
+          "equation": "\\frac{x}{2} = 4",
+          "operation": "multiply both sides by 2",
+          "operationDisplay": "×2"
+        },
+        {
+          "equation": "x = 8",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "variables-both-sides",
+      "description": "Equation with variables on both sides",
+      "input": "3x+5=2x+12",
+      "expectedOutput": "\\begin{array}{rcrcr}\n3x + 5 & = & 2x + 12 & & \\\\\n-2x & & -2x & & \\\\\n\\hline\nx + 5 & = & 12 & & \\\\\n & & -5 & & -5 \\\\\n\\hline\nx & = & 7 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "3x + 5 = 2x + 12",
+          "operation": "subtract 2x from both sides",
+          "operationDisplay": "-2x"
+        },
+        {
+          "equation": "x + 5 = 12",
+          "operation": "subtract 5 from both sides",
+          "operationDisplay": "-5"
+        },
+        {
+          "equation": "x = 7",
+          "operation": "solution"
+        }
+      ]
+    },
+    {
+      "id": "simple-with-spacing",
+      "description": "Test spacing for simple equation",
+      "input": "x+5=12",
+      "expectedSpacing": "x\\hspace{0.25em}+\\hspace{0.25em}5\\hspace{0.25em}=\\hspace{0.25em}12",
+      "expectedOutput": "\\begin{array}{rcrcr}\nx + 5 & = & 12 & & \\\\\n & & -5 & & -5 \\\\\n\\hline\nx & = & 7 & &\n\\end{array}"
+    },
+    {
+      "id": "complex-spacing",
+      "description": "Test spacing for complex expression",
+      "input": "2x^2+3x-5=0",
+      "expectedSpacing": "2x^2\\hspace{0.2em}+\\hspace{0.2em}3x\\hspace{0.2em}-\\hspace{0.2em}5\\hspace{0.25em}=\\hspace{0.25em}0",
+      "note": "This is for spacing test only, not for solving (quadratic equation)"
+    },
+    {
+      "id": "parentheses-expansion",
+      "description": "Equation requiring parentheses expansion",
+      "input": "2(3x-1)=4x+6",
+      "expectedOutput": "\\begin{array}{rcrcr}\n2(3x - 1) & = & 4x + 6 & & \\\\\n6x - 2 & = & 4x + 6 & & \\\\\n-4x & & -4x & & \\\\\n\\hline\n2x - 2 & = & 6 & & \\\\\n & & +2 & & +2 \\\\\n\\hline\n2x & = & 8 & & \\\\\n÷2 & & & & ÷2 \\\\\n\\hline\nx & = & 4 & &\n\\end{array}",
+      "steps": [
+        {
+          "equation": "2(3x - 1) = 4x + 6",
+          "operation": "distribute 2",
+          "operationDisplay": "distribute"
+        },
+        {
+          "equation": "6x - 2 = 4x + 6",
+          "operation": "subtract 4x from both sides",
+          "operationDisplay": "-4x"
+        },
+        {
+          "equation": "2x - 2 = 6",
+          "operation": "add 2 to both sides",
+          "operationDisplay": "+2"
+        },
+        {
+          "equation": "2x = 8",
+          "operation": "divide both sides by 2",
+          "operationDisplay": "÷2"
+        },
+        {
+          "equation": "x = 4",
+          "operation": "solution"
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "arrayFormat": "Use \\begin{array}{rcrcr} for 5 columns: left expression, equals sign, right expression, spacing, operation indicator",
+    "alignment": "r = right align for expressions, c = center for operators and equals",
+    "operations": "Show operations between lines (e.g., -4, +7, ÷2, ×3)",
+    "horizontalLines": "Use \\hline to separate equation steps from operations",
+    "spacing": "Add \\hspace{0.2em} around binary operators, \\hspace{0.25em} around equals signs",
+    "katexCompatibility": "Use \\begin{array} instead of \\begin{align} as KaTeX doesn't support align"
+  }
+}

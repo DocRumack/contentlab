@@ -1,0 +1,356 @@
+/* ContentRenderer CSS - Content Creation Lab Version */
+
+/* Simple CSS for math steps layout */
+.math-steps {
+  margin: 1rem 0;
+}
+
+.step-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0.5rem 0;
+}
+
+.step-text {
+  flex: 0 1 50%;
+  padding-right: 2rem;
+}
+
+.step-math {
+  flex: 0 1 50%;
+  text-align: right;
+}
+
+/* Block-level math container */
+.math-block {
+  display: block;
+  margin: 0;
+}
+
+/* Default spacing for mathjaxContent items */
+.content-mathjaxContent {
+  display: block;
+}
+
+/* ========== CONTENT FORMAT OVERRIDE STYLES ========== */
+/* These styles override the inline styles from contentFormats.js */
+
+/* Heading styles - FORCE NO INDENTATION */
+.format-h1 {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  border-bottom: 2px solid #666 !important;
+}
+
+.format-h2 {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.format-h3 {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.format-h4 {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Text content - FULL BLOCK INDENTATION */
+.format-text {
+  display: block !important;
+  margin-left: 2em !important;
+  padding-left: 0 !important;
+}
+
+/* Special content blocks with indentation */
+.format-def {
+  margin-left: 2em !important;
+}
+
+.format-note {
+  margin-left: 2em !important;
+}
+
+.format-warning {
+  margin-left: 2em !important;
+}
+
+.format-example {
+  margin-left: 2em !important;
+}
+
+/* Inline example content styling */
+.format-inline-example {
+  display: block !important;
+}
+
+.format-inline-example.mixed-content {
+  display: block !important;
+}
+
+.format-summary {
+  margin-left: 2em !important;
+}
+
+.format-important {
+  margin-left: 2em !important;
+}
+
+.format-bullet {
+  display: block !important;
+  margin-left: 2em !important;
+  padding-left: 2.5em !important;
+  position: relative;
+}
+
+.format-bullet::before {
+  content: "▸";
+  position: absolute;
+  left: 1em;
+  color: #666;
+}
+
+/* Indented sub-bullets */
+.format-indented-bullet {
+  display: block !important;
+  margin-left: 4em !important;
+  padding-left: 2.5em !important;
+  position: relative;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+.format-indented-bullet::before {
+  content: "◦";
+  position: absolute;
+  left: 1em;
+  color: #666;
+  font-size: 1.1em;
+}
+
+.format-numbered {
+  display: block !important;
+  margin-left: 2em !important;
+  padding-left: 2em !important;
+  position: relative;
+}
+
+/* Separator formatting */
+.format-separator {
+  display: block !important;
+  width: 60% !important;
+  margin: 1.5em auto !important;
+  padding: 0 !important;
+  height: 2px !important;
+  border: none !important;
+  background: linear-gradient(
+    90deg,
+    rgba(85, 85, 85, 0.5),
+    rgba(85, 85, 85, 1) 30%,
+    rgba(85, 85, 85, 1) 70%,
+    rgba(85, 85, 85, 0.5)
+  ) !important;
+}
+
+/* Formula content - centered with proper sizing */
+.format-formula {
+  display: block;
+  text-align: center;
+  margin: 1.5em auto;
+  padding: 0;
+  width: 100%;
+}
+
+/* Ensure KaTeX inside formulas is centered */
+.format-formula .katex-display {
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Override the font size increase */
+.format-formula .katex {
+  font-size: inherit;
+}
+
+/* SVG content - properly centered */
+.format-svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em auto;
+}
+
+/* Special case: Formula followed by bracket SVG */
+.format-formula + .format-svg {
+  margin-top: -1.3em !important;
+}
+
+/* ========== KEY CONCEPT VISUAL GROUPING ========== */
+.kc-block {
+  margin: 1.5em 0;
+  position: relative;
+  background: linear-gradient(90deg, #f8f7ff 0%, #ffffff 100%);
+  border-left: 4px solid #7c3aed;
+  padding: 0.75em 1.25em;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.1);
+}
+
+.kc-header {
+  display: flex;
+  align-items: baseline;
+}
+
+.kc-prefix {
+  font-weight: 700;
+  color: #7c3aed;
+  margin-right: 0.5em;
+  flex-shrink: 0;
+}
+
+.kc-title {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.05em;
+}
+
+.kc-description {
+  margin-top: 0.3em;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.95em;
+  padding-left: 0;
+}
+
+/* ========== KaTeX Mixed Content Alignment Fixes ========== */
+
+/* For mixed text and math content */
+.mixed-content {
+  display: inline-block;
+}
+
+/* Pure text content */
+.text-content {
+  line-height: 1.6;
+}
+
+/* CRITICAL: Fix KaTeX baseline alignment */
+.inline-math .katex,
+.mixed-content .katex,
+.content-mathjaxContent .katex,
+.format-text .katex {
+  display: inline-block;
+  vertical-align: 0.05ex;
+  font-size: var(--katex-inline-scale, 1.05em);
+  margin: 0 0.08em;
+}
+
+/* Display math (centered formulas) */
+.katex-display .katex,
+.format-formula .katex {
+  font-size: var(--katex-display-scale, 1.2em);
+}
+
+/* Ensure inline KaTeX doesn't break line flow */
+.mixed-content > span,
+.mixed-content .katex {
+  vertical-align: baseline;
+  line-height: inherit;
+}
+
+/* ========== Container-Specific Styles ========== */
+
+/* ProblemSolver Container Specific */
+.problem-content .mixed-content {
+  display: block !important;
+  line-height: 1.6;
+}
+
+.problem-content .katex,
+.problem-content .katex-display,
+.problem-content .inline-math .katex {
+  color: #000 !important;
+}
+
+.problem-content .mixed-content > span {
+  display: inline;
+  color: #000;
+}
+
+.problem-content .inline-math {
+  display: inline !important;
+}
+
+.problem-content .format-text {
+  color: #000 !important;
+}
+
+.problem-content .format-formula {
+  text-align: center;
+}
+
+.problem-content .format-formula .katex {
+  font-size: inherit;
+  color: #000 !important;
+}
+
+/* ========== NUMBERED LIST EXPLICIT COUNTER ========== */
+
+div.format-numbered {
+  display: block !important;
+  margin-left: 2em !important;
+  padding-left: 2.5em !important;
+  position: relative;
+}
+
+div.format-numbered::before {
+  content: attr(data-number) ". ";
+  position: absolute;
+  left: 1em;
+  font-weight: 600;
+  color: #666;
+}
+
+div.format-number-reset {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ========== Additional Enhancements ========== */
+
+/* Quote block styling */
+.format-quote {
+  display: block !important;
+  margin-left: 2em !important;
+  padding-left: 1em !important;
+  border-left: 3px solid #ccc !important;
+  font-style: italic;
+  color: #555;
+}
+
+/* Code block styling */
+.format-codeBlock {
+  display: block !important;
+  margin: 1em 2em !important;
+  padding: 1em !important;
+  background: #f5f5f5 !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  white-space: pre-wrap !important;
+}
+
+/* Example content with special styling */
+.format-example {
+  display: block !important;
+  margin: 1em 2em !important;
+  padding: 0.8em 1.2em !important;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3f8ff 100%) !important;
+  border-left: 4px solid #2196f3 !important;
+  border-radius: 4px !important;
+}

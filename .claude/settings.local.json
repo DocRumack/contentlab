@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(mkdir:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run test-ast:*)",
+      "Bash(start test-render.html)",
+      "Bash(grep:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

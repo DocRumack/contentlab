@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <style>
+      body {
+        margin: 50px;
+        background: white;
+        font-family: sans-serif;
+      }
+      .formula {
+        font-size: 24px;
+        margin: 30px 0;
+        border: 1px solid #ddd;
+        padding: 20px;
+      }
+      .label {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Testing Large Operation Spacing</h2>
+
+    <div class="formula">
+      <div class="label">With -2.65em (current output):</div>
+      <div id="formula1"></div>
+    </div>
+
+    <div class="formula">
+      <div class="label">With -0.8em (what should work):</div>
+      <div id="formula2"></div>
+    </div>
+
+    <div class="formula">
+      <div class="label">With -1.2em (compromise):</div>
+      <div id="formula3"></div>
+    </div>
+
+    <script>
+      const latex1 = String.raw`\begin{array}{cccc}
+100x&-&2500&=\hspace{0.4em}&7500 \\[0.5em]
+&&\hspace{-2.65em}+2500& &\hspace{-0.75em}+2500 \\[0.5em]
+\hline
+\\
+&&100x &=\hspace{0.4em}& \hspace{-0.5em}10000
+\end{array}`;
+
+      const latex2 = String.raw`\begin{array}{cccc}
+100x&-&2500&=\hspace{0.4em}&7500 \\[0.5em]
+&&\hspace{-0.8em}+2500& &\hspace{-0.75em}+2500 \\[0.5em]
+\hline
+\\
+&&100x &=\hspace{0.4em}& \hspace{-0.5em}10000
+\end{array}`;
+
+      const latex3 = String.raw`\begin{array}{cccc}
+100x&-&2500&=\hspace{0.4em}&7500 \\[0.5em]
+&&\hspace{-1.2em}+2500& &\hspace{-0.75em}+2500 \\[0.5em]
+\hline
+\\
+&&100x &=\hspace{0.4em}& \hspace{-0.5em}10000
+\end{array}`;
+
+      katex.render(latex1, document.getElementById("formula1"), {
+        displayMode: true,
+        throwOnError: false,
+      });
+
+      katex.render(latex2, document.getElementById("formula2"), {
+        displayMode: true,
+        throwOnError: false,
+      });
+
+      katex.render(latex3, document.getElementById("formula3"), {
+        displayMode: true,
+        throwOnError: false,
+      });
+    </script>
+  </body>
+</html>
