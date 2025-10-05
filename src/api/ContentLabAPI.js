@@ -1,5 +1,7 @@
 import { ClaudeCodeHelper } from './claude-code-helpers.js';
 import { BatchProcessor } from './batch-processor.js';
+import NumberLineTool from '../components/Tools/NumberLineTool.js';
+import GraphTool from '../components/Tools/GraphTool.js';
 
 /**
  * ContentLabAPI - Programmatic interface for Claude Code automation
@@ -216,6 +218,589 @@ export class ContentLabAPI {
   
   async waitForRender(ms = 100) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Generate a number line SVG from commands
+   * @param {string} commands - Number line commands (one per line)
+   * @param {object} options - Generation options (min, max, size, etc.)
+   * @returns {Promise<object>} Result with success, svg, and metadata
+   */
+  async generateNumberLine(commands, options = {}) {
+    try {
+      // Use imported NumberLineTool
+      const tool = new NumberLineTool();
+      
+      // Process the commands
+      const result = await tool.processContent(commands, options);
+      
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      
+      return {
+        success: true,
+        svg: result.data.svg,
+        metadata: {
+          type: 'number-line',
+          lineData: result.data.lineData,
+          options: result.data.options,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        svg: null,
+        metadata: null
+      };
+    }
+  }
+
+  /**
+   * Generate a coordinate graph SVG from commands
+   * @param {string} commands - Graph commands (one per line)
+   * @param {object} options - Generation options (xMin, xMax, yMin, yMax, size, etc.)
+   * @returns {Promise<object>} Result with success, svg, and metadata
+   */
+  async generateGraph(commands, options = {}) {
+    try {
+      // Use imported GraphTool
+      const tool = new GraphTool();
+      
+      // Process the commands
+      const result = await tool.processContent(commands, options);
+      
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      
+      return {
+        success: true,
+        svg: result.data.svg,
+        metadata: {
+          type: 'graph',
+          graphData: result.data.graphData,
+          options: result.data.options,
+          timestamp: new Date().toISOString()
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        svg: null,
+        metadata: null
+      };
+    }
+  }
+
+
+  /**
+   * Verify visual correctness of generated content using computer vision rules
+   * @param {string} type - Type of content ('number-line' or 'graph')
+   * @param {string} screenshotData - Base64 screenshot data or file path
+   * @param {object} verificationRules - Rules to check (optional, uses defaults)
+   * @returns {Promise<object>} Verification results with pass/fail and details
+   */
+  async verifyVisual(type, screenshotData, verificationRules = {}) {
+    try {
+      const results = {
+        passed: true,
+        checks: {},
+        errors: [],
+        timestamp: new Date().toISOString()
+      };
+
+      // Default verification rules based on type
+      const defaultRules = this.getDefaultVerificationRules(type);
+      const rules = { ...defaultRules, ...verificationRules };
+
+      // Perform checks based on type
+      if (type === 'number-line') {
+        await this.verifyNumberLine(screenshotData, rules, results);
+      } else if (type === 'graph') {
+        await this.verifyGraph(screenshotData, rules, results);
+      } else {
+        throw new Error(`Unknown content type: ${type}`);
+      }
+
+      // Check if any verification failed
+      results.passed = results.errors.length === 0;
+
+      return {
+        success: true,
+        results
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        results: null
+      };
+    }
+  }
+
+  /**
+   * Get default verification rules for a content type
+   * @private
+   */
+  getDefaultVerificationRules(type) {
+    const rules = {
+      'number-line': {
+        checkIntervalPosition: true,
+        checkCircleTypes: true,
+        checkSpacing: true,
+        checkBounds: true,
+        checkColors: true,
+        checkReadability: true,
+        tolerancePixels: 5
+      },
+      'graph': {
+        checkFunctionAccuracy: true,
+        checkLineSlope: true,
+        checkAxisLabels: true,
+        checkGridVisibility: true,
+        checkOriginLabel: true,
+        checkBounds: true,
+        checkColors: true,
+        checkReadability: true,
+        tolerancePixels: 5
+      }
+    };
+
+    return rules[type] || {};
+  }
+
+  /**
+   * Verify number line visual correctness
+   * @private
+   */
+  async verifyNumberLine(screenshotData, rules, results) {
+    // Check 1: Intervals positioned above main line
+    if (rules.checkIntervalPosition) {
+      const intervalCheck = await this.checkIntervalPosition(screenshotData);
+      results.checks.intervalPosition = intervalCheck.passed;
+      if (!intervalCheck.passed) {
+        results.errors.push('Intervals overlap with tick marks');
+      }
+    }
+
+    // Check 2: Open vs closed circles
+    if (rules.checkCircleTypes) {
+      const circleCheck = await this.checkCircleTypes(screenshotData);
+      results.checks.circleTypes = circleCheck.passed;
+      if (!circleCheck.passed) {
+        results.errors.push('Circle types (open/closed) incorrect');
+      }
+    }
+
+    // Check 3: Interval spacing
+    if (rules.checkSpacing) {
+      const spacingCheck = await this.checkIntervalSpacing(screenshotData);
+      results.checks.spacing = spacingCheck.passed;
+      if (!spacingCheck.passed) {
+        results.errors.push('Interval spacing incorrect (expected 25px)');
+      }
+    }
+
+    // Check 4: Content within bounds
+    if (rules.checkBounds) {
+      const boundsCheck = await this.checkContentBounds(screenshotData, 'number-line');
+      results.checks.bounds = boundsCheck.passed;
+      if (!boundsCheck.passed) {
+        results.errors.push('Content cutoff at edges detected');
+      }
+    }
+
+    // Check 5: Colors applied correctly
+    if (rules.checkColors) {
+      const colorCheck = await this.checkColors(screenshotData);
+      results.checks.colors = colorCheck.passed;
+      if (!colorCheck.passed) {
+        results.errors.push('Colors not applied correctly');
+      }
+    }
+
+    // Check 6: Readability
+    if (rules.checkReadability) {
+      const readabilityCheck = await this.checkReadability(screenshotData);
+      results.checks.readability = readabilityCheck.passed;
+      if (!readabilityCheck.passed) {
+        results.errors.push('Content not readable at current size');
+      }
+    }
+  }
+
+  /**
+   * Verify graph visual correctness
+   * @private
+   */
+  async verifyGraph(screenshotData, rules, results) {
+    // Check 1: Function accuracy
+    if (rules.checkFunctionAccuracy) {
+      const functionCheck = await this.checkFunctionAccuracy(screenshotData);
+      results.checks.functionAccuracy = functionCheck.passed;
+      if (!functionCheck.passed) {
+        results.errors.push('Function does not pass through expected points');
+      }
+    }
+
+    // Check 2: Line slope and intercept
+    if (rules.checkLineSlope) {
+      const lineCheck = await this.checkLineSlope(screenshotData);
+      results.checks.lineSlope = lineCheck.passed;
+      if (!lineCheck.passed) {
+        results.errors.push('Line slope or intercept incorrect');
+      }
+    }
+
+    // Check 3: Axis labels
+    if (rules.checkAxisLabels) {
+      const axisCheck = await this.checkAxisLabels(screenshotData);
+      results.checks.axisLabels = axisCheck.passed;
+      if (!axisCheck.passed) {
+        results.errors.push('Axis labels (x, y) missing or incorrect');
+      }
+    }
+
+    // Check 4: Grid visibility
+    if (rules.checkGridVisibility) {
+      const gridCheck = await this.checkGridVisibility(screenshotData);
+      results.checks.gridVisibility = gridCheck.passed;
+      if (!gridCheck.passed) {
+        results.errors.push('Grid lines not visible or too cluttered');
+      }
+    }
+
+    // Check 5: Origin label position
+    if (rules.checkOriginLabel) {
+      const originCheck = await this.checkOriginLabel(screenshotData);
+      results.checks.originLabel = originCheck.passed;
+      if (!originCheck.passed) {
+        results.errors.push('Origin label not positioned correctly');
+      }
+    }
+
+    // Check 6: Content within bounds
+    if (rules.checkBounds) {
+      const boundsCheck = await this.checkContentBounds(screenshotData, 'graph');
+      results.checks.bounds = boundsCheck.passed;
+      if (!boundsCheck.passed) {
+        results.errors.push('Content clipping outside viewBox');
+      }
+    }
+
+    // Check 7: Colors applied correctly
+    if (rules.checkColors) {
+      const colorCheck = await this.checkColors(screenshotData);
+      results.checks.colors = colorCheck.passed;
+      if (!colorCheck.passed) {
+        results.errors.push('Colors not applied correctly');
+      }
+    }
+
+    // Check 8: Readability
+    if (rules.checkReadability) {
+      const readabilityCheck = await this.checkReadability(screenshotData);
+      results.checks.readability = readabilityCheck.passed;
+      if (!readabilityCheck.passed) {
+        results.errors.push('Content not readable at current size');
+      }
+    }
+  }
+
+  /**
+   * Placeholder computer vision check methods
+   * These will be implemented with actual CV logic by Claude Code
+   * @private
+   */
+  async checkIntervalPosition(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkCircleTypes(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkIntervalSpacing(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkContentBounds(screenshotData, type) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkColors(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkReadability(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkFunctionAccuracy(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkLineSlope(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkAxisLabels(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkGridVisibility(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+  async checkOriginLabel(screenshotData) {
+    // TODO: Implement actual computer vision check
+    return { passed: true };
+  }
+
+
+  /**
+   * Batch generate and verify multiple items with retry logic
+   * @param {Array} items - Array of items to process, each with {type, commands, options, verificationRules}
+   * @param {object} batchOptions - Batch processing options
+   * @returns {Promise<object>} Aggregated results with successes, failures, and errors
+   */
+  async batchGenerateAndVerify(items, batchOptions = {}) {
+    const {
+      maxRetries = 3,
+      retryDelay = 1000,
+      captureScreenshots = true,
+      saveResults = true,
+      outputDir = './output'
+    } = batchOptions;
+
+    const results = {
+      total: items.length,
+      successful: 0,
+      failed: 0,
+      items: [],
+      errors: [],
+      timestamp: new Date().toISOString()
+    };
+
+    console.log(`Starting batch processing of ${items.length} items...`);
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const itemResult = {
+        index: i,
+        type: item.type,
+        commands: item.commands,
+        attempts: 0,
+        success: false,
+        svg: null,
+        metadata: null,
+        verificationResults: null,
+        error: null
+      };
+
+      // Retry loop for each item
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        itemResult.attempts = attempt;
+        
+        try {
+          console.log(`Processing item ${i + 1}/${items.length} (attempt ${attempt}/${maxRetries})...`);
+
+          // Step 1: Generate the content
+          let generateResult;
+          if (item.type === 'number-line') {
+            generateResult = await this.generateNumberLine(item.commands, item.options || {});
+          } else if (item.type === 'graph') {
+            generateResult = await this.generateGraph(item.commands, item.options || {});
+          } else {
+            throw new Error(`Unknown item type: ${item.type}`);
+          }
+
+          if (!generateResult.success) {
+            throw new Error(`Generation failed: ${generateResult.error}`);
+          }
+
+          itemResult.svg = generateResult.svg;
+          itemResult.metadata = generateResult.metadata;
+
+          // Step 2: Capture screenshot if enabled
+          let screenshotData = null;
+          if (captureScreenshots) {
+            // Load the generated content into ContentLab
+            await this.loadContent(generateResult.svg);
+            await this.waitForRender(500); // Wait for render
+            
+            // Capture screenshot
+            const screenshotResult = await this.screenshot();
+            screenshotData = screenshotResult;
+          }
+
+          // Step 3: Verify the content
+          const verifyResult = await this.verifyVisual(
+            item.type,
+            screenshotData,
+            item.verificationRules || {}
+          );
+
+          if (!verifyResult.success) {
+            throw new Error(`Verification failed: ${verifyResult.error}`);
+          }
+
+          itemResult.verificationResults = verifyResult.results;
+
+          // Check if verification passed
+          if (!verifyResult.results.passed) {
+            // If verification failed and we have retries left, adjust parameters and retry
+            if (attempt < maxRetries) {
+              console.log(`Verification failed on attempt ${attempt}. Errors: ${verifyResult.results.errors.join(', ')}`);
+              console.log(`Retrying with adjusted parameters...`);
+              
+              // Adjust parameters based on verification errors
+              item.options = this.adjustParametersForRetry(item.options, verifyResult.results.errors);
+              
+              await new Promise(resolve => setTimeout(resolve, retryDelay));
+              continue; // Retry
+            } else {
+              throw new Error(`Verification failed after ${maxRetries} attempts: ${verifyResult.results.errors.join(', ')}`);
+            }
+          }
+
+          // Success!
+          itemResult.success = true;
+          results.successful++;
+          console.log(`✓ Item ${i + 1}/${items.length} processed successfully`);
+          break; // Exit retry loop
+
+        } catch (error) {
+          itemResult.error = error.message;
+          
+          if (attempt === maxRetries) {
+            // Final attempt failed
+            results.failed++;
+            results.errors.push({
+              index: i,
+              type: item.type,
+              commands: item.commands,
+              error: error.message,
+              attempts: attempt
+            });
+            console.log(`✗ Item ${i + 1}/${items.length} failed after ${maxRetries} attempts: ${error.message}`);
+          } else {
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+          }
+        }
+      }
+
+      results.items.push(itemResult);
+    }
+
+    // Save results if enabled
+    if (saveResults) {
+      await this.saveBatchResults(results, outputDir);
+    }
+
+    console.log(`\nBatch processing complete: ${results.successful}/${results.total} successful, ${results.failed}/${results.total} failed`);
+
+    return results;
+  }
+
+  /**
+   * Adjust generation parameters based on verification errors
+   * @private
+   */
+  adjustParametersForRetry(currentOptions, errors) {
+    const adjusted = { ...currentOptions };
+
+    // Check for specific error patterns and adjust accordingly
+    errors.forEach(error => {
+      if (error.includes('Content cutoff') || error.includes('clipping')) {
+        // Increase bounds
+        if (adjusted.min !== undefined) adjusted.min -= 1;
+        if (adjusted.max !== undefined) adjusted.max += 1;
+        if (adjusted.xMin !== undefined) adjusted.xMin -= 1;
+        if (adjusted.xMax !== undefined) adjusted.xMax += 1;
+        if (adjusted.yMin !== undefined) adjusted.yMin -= 1;
+        if (adjusted.yMax !== undefined) adjusted.yMax += 1;
+      }
+
+      if (error.includes('not readable')) {
+        // Try increasing size
+        const sizeMap = { small: 'medium', medium: 'large', large: 'xlarge' };
+        if (adjusted.size && sizeMap[adjusted.size]) {
+          adjusted.size = sizeMap[adjusted.size];
+        }
+      }
+
+      if (error.includes('spacing')) {
+        // Adjust spacing parameters if available
+        if (adjusted.intervalSpacing !== undefined) {
+          adjusted.intervalSpacing = 25; // Ensure proper spacing
+        }
+      }
+    });
+
+    return adjusted;
+  }
+
+  /**
+   * Save batch processing results to JSON file
+   * @private
+   */
+  async saveBatchResults(results, outputDir) {
+    try {
+      const fs = require('fs').promises;
+      const path = require('path');
+
+      // Ensure output directory exists
+      await fs.mkdir(outputDir, { recursive: true });
+
+      // Create filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `batch-results-${timestamp}.json`;
+      const filepath = path.join(outputDir, filename);
+
+      // Save results
+      await fs.writeFile(filepath, JSON.stringify(results, null, 2));
+
+      // Also save individual successful items
+      const successfulDir = path.join(outputDir, 'successful');
+      await fs.mkdir(successfulDir, { recursive: true });
+
+      for (const item of results.items) {
+        if (item.success && item.svg) {
+          const itemFilename = `${item.type}-${item.index}.json`;
+          const itemData = {
+            type: item.type,
+            content: item.svg,
+            commands: item.commands,
+            metadata: item.metadata,
+            verificationResults: item.verificationResults
+          };
+          await fs.writeFile(
+            path.join(successfulDir, itemFilename),
+            JSON.stringify(itemData, null, 2)
+          );
+        }
+      }
+
+      console.log(`Results saved to ${filepath}`);
+    } catch (error) {
+      console.error(`Failed to save batch results: ${error.message}`);
+    }
   }
 
 
@@ -436,4 +1021,9 @@ export class ContentLabAPI {
 // Export for use in Node.js environment (Claude Code)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { ContentLabAPI };
+}
+
+// Expose to window for browser automation
+if (typeof window !== 'undefined') {
+  window.ContentLabAPI = ContentLabAPI;
 }

@@ -3,7 +3,7 @@ import ContentLab from './components/Framework/ContentLab'
 function App() {
   return (
     <div className="App">
-      <ContentLab />
+      <ContentLab enableAPI={true} />
     </div>
   )
 }
